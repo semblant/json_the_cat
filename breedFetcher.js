@@ -1,25 +1,22 @@
 const needle = require('needle');
 
-//GET https://api.thecatapi.com/v1/breeds/search
-
-
-const getBreed = () => {
-  const args = process.argv.slice(2).toString();
-  breedFetcher(args);
-};
-
-const breedFetcher = (breed) => {
-  needle.get(`https://api.thecatapi.com/v1/breeds/search?q=${breed}`, (error, response, body) => {
+/**
+ * Function returns description for a provided, valid, cat breed via a callback
+ *
+ * @param {string} breedName - the breed name to find the description for
+ * @param {Function} callback - the call back that is used to return either the description or error
+ */
+const fetchBreedDescription = (breedName, callback) => {
+  needle.get(`https://api.thecatapi.com/v1/breeds/search?q=${breedName}`, (error, response, body) => {
     if (error) {
-      console.log('Error fetching URL: ', error.message);
+      callback(error.message, null);
     } else {
       try {
-        console.log(body[0].description);
+        callback(null, body[0].description);
       } catch (e) {
-        console.log('Breed not found.');
+        callback('Breed not found.', null);
       }
     }
   });
 };
-
-getBreed();
+module.exports = { fetchBreedDescription };
